@@ -2,60 +2,48 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDFJ 联机对决</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SDFJ 嘴炮联机-稳定版</title>
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}
-        body{background:#fdf2f2;padding:12px;max-width:500px;margin:0 auto;color:#333}
-        .card-box{background:white;padding:15px;border-radius:12px;box-shadow:0 4px 12px rgba(217,42,42,0.1);margin-bottom:12px}
-        .title{text-align:center;color:#d92a2a;margin-bottom:10px;font-size:20px}
-        
-        /* 联机区域 */
-        .conn-area{background:#fff;border:1px solid #ffcccc}
-        .id-text{font-size:12px;background:#eee;padding:5px;border-radius:4px;word-break:all;display:block;margin:5px 0}
-        input{padding:8px;border:1px solid #ddd;border-radius:6px;width:100%;margin-bottom:8px}
-        
-        /* 游戏区域 */
-        .status-bar{display:flex;justify-content:space-between;font-size:13px;font-weight:bold;color:#d92a2a;margin-bottom:8px}
-        .desktop{min-height:100px;border:2px dashed #d92a2a;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:10px 0;background:#fff5f5;padding:10px}
-        
-        /* 牌阵 */
-        .cards{display:flex;flex-wrap:wrap;gap:6px;margin:15px 0;justify-content:center}
-        .card{padding:8px 10px;background:white;border:2px solid #d92a2a;border-radius:6px;cursor:pointer;font-size:13px;transition:0.2s}
-        .card.selected{background:#d92a2a;color:white;transform:translateY(-5px)}
-        
-        /* 控制按钮 */
-        .controls{display:grid;grid-template-columns: 1fr 1fr;gap:8px}
-        button{padding:12px;border-radius:8px;border:none;background:#d92a2a;color:white;font-weight:bold;cursor:pointer;transition:0.3s}
-        button:disabled{background:#ccc;cursor:not-allowed}
-        .btn-full{grid-column: span 2}
-        .btn-start{background:#28a745}
-
-        #log{font-size:11px;color:#888;margin-top:10px;background:#eee;padding:8px;border-radius:6px;height:60px;overflow-y:auto}
+        :root { --main-red: #d92a2a; --bg-pink: #fdf2f2; }
+        *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
+        body{ background: var(--bg-pink); font-family: system-ui, -apple-system; padding: 12px; padding-bottom: env(safe-area-inset-bottom); color:#333; }
+        .card-box{ background:white; padding:15px; border-radius:16px; box-shadow:0 4px 15px rgba(217,42,42,0.1); margin-bottom:12px; }
+        .title{ text-align:center; color: var(--main-red); margin-bottom: 10px; font-size:20px; }
+        .id-text{ font-size:13px; background:#f0f0f0; padding:12px; border-radius:8px; word-break:all; display:block; margin:8px 0; border: 1px dashed #ccc; color: blue; font-weight: bold; text-align: center; }
+        input{ padding:12px; border:1px solid #ddd; border-radius:10px; width:100%; margin-bottom:10px; font-size: 16px; }
+        .status-bar{ display:flex; justify-content:space-between; font-size:13px; font-weight:bold; color: var(--main-red); margin-bottom:10px; }
+        .desktop{ min-height:120px; border:2px dashed #ffb3b3; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:10px 0; background:#fff; padding:15px; }
+        .cards{ display:flex; flex-wrap:wrap; gap:8px; margin:15px 0; justify-content:center; }
+        .card{ padding:10px 12px; background:white; border:2px solid var(--main-red); border-radius:10px; cursor:pointer; font-size:14px; font-weight: 600; }
+        .card.selected{ background: var(--main-red); color:white; transform: translateY(-5px); }
+        .controls{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+        button{ padding:14px; border-radius:12px; border:none; background: var(--main-red); color:white; font-weight:bold; cursor:pointer; font-size: 15px; }
+        button:disabled{ background:#ddd; color: #999; }
+        .btn-full{ grid-column: span 2; }
+        .btn-start{ background:#28a745; }
+        #log{ font-size:11px; color:#888; margin-top:15px; background:rgba(255,255,255,0.7); padding:8px; border-radius:8px; height:60px; overflow-y:auto; }
     </style>
 </head>
 <body>
 
-<h2 class="title">🎴 SDFJ 嘴炮联机版</h2>
+<h2 class="title">🎴 SDFJ 嘴炮联机</h2>
 
-<div class="card-box conn-area" id="setupArea">
-    <p>1. 你的ID（点击复制给朋友）:</p>
-    <code class="id-text" id="myId" onclick="copyId()">正在获取...</code>
-    <input type="text" id="peerIdInput" placeholder="输入对方的ID">
+<div class="card-box" id="setupArea">
+    <p style="font-size:13px; color:#666">1. 你的ID (点一下复制):</p>
+    <code class="id-text" id="myId" onclick="copyId()">获取中...</code>
+    <input type="text" id="peerIdInput" placeholder="在此粘贴朋友的ID">
     <button class="btn-full" onclick="connectToPeer()">连接朋友</button>
+    <p style="font-size:11px; color:red; margin-top:8px; text-align:center">提示：连接不上请尝试切换流量/WiFi</p>
 </div>
 
 <div class="card-box" id="gameArea" style="display:none">
     <div class="status-bar">
-        <span id="roleDisplay">角色：加载中</span>
-        <span id="turnDisplay">等待开始</span>
+        <span id="roleDisplay">● 已连接</span>
+        <span id="turnDisplay">等待发牌</span>
     </div>
-    
-    <div class="desktop" id="desktop">
-        <div id="tableCards" style="font-weight:bold;font-size:16px;text-align:center">等待发牌...</div>
-    </div>
-
+    <div class="desktop" id="tableCards">等待发牌...</div>
     <div class="controls">
         <button id="btnStart" class="btn-full btn-start" onclick="dealCards()">🎲 洗牌并给双方发牌</button>
         <button id="btnPlay" disabled onclick="play()">出牌</button>
@@ -66,27 +54,26 @@
 </div>
 
 <div class="cards" id="handContainer"></div>
-
-<div id="log">系统日志：等待初始化...</div>
+<div id="log">系统日志：正在启动...</div>
 
 <script>
-const ALL_CARDS = [
-    "王俊凯","王源","易烊千玺",
+const ALL_CARDS = ["王俊凯","王源","易烊千玺",
     "马嘉祺","丁程鑫","宋亚轩","刘耀文","张真源","严浩翔","贺峻霖",
     "朱志鑫","左航","张极","张泽禹","苏新皓","邓佳鑫","余宇涵","童禹坤","张峻豪","穆祉丞","张子墨",
     "黄朔","官俊臣","张桂源","杨博文","左奇涵","张函瑞","王橹杰","杨涵博","魏子宸", "李煜东","陈思罕","聂伟宸","陈奕恒","陈浚铭",
-    "李飞","黄锐"
-];
+    "李飞","黄锐"];
+let peer, conn, myHand = [], selected = [], isMyTurn = false, onTable = [];
 
+function initPeer() {
+    // 强制使用公共 STUN 服务器，提高穿透成功率
+    peer = new Peer({
+        config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }, { 'urls': 'stun:stun1.l.google.com:19302' }] }
+    });
+    peer.on('open', id => { document.getElementById('myId').innerText = id; log("ID就绪，等待连接"); });
+    peer.on('connection', c => { conn = c; setupConn(); });
+    peer.on('error', err => { log("错误: " + err.type); alert("连接出错，请刷新重试"); });
+}
 
-let peer = new Peer();
-let conn = null;
-let myHand = [];
-let selected = [];
-let isMyTurn = false;
-let onTable = [];
-
-// 日志系统
 function log(msg) {
     const l = document.getElementById('log');
     l.innerHTML += `<div>> ${msg}</div>`;
@@ -94,151 +81,245 @@ function log(msg) {
 }
 
 function copyId() {
-    const id = document.getElementById('myId').innerText;
-    navigator.clipboard.writeText(id);
-    alert("ID已复制，发给朋友吧！");
+    const text = document.getElementById('myId').innerText;
+    if(text.includes("获取")) return;
+    navigator.clipboard.writeText(text).then(() => alert("ID已复制")).catch(() => {
+        const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el);
+        el.select(); document.execCommand('copy'); document.body.removeChild(el); alert("ID已复制");
+    });
 }
 
-// 1. 初始化 ID
-peer.on('open', (id) => {
-    document.getElementById('myId').innerText = id;
-    log("我的ID已生成，可以连接了");
-});
-
-// 2. 监听连接
-peer.on('connection', (c) => {
-    conn = c;
-    log("收到连接请求...");
-    setupConn();
-});
-
-// 3. 发起连接
 function connectToPeer() {
     const id = document.getElementById('peerIdInput').value.trim();
     if(!id) return alert("请输入ID");
-    conn = peer.connect(id);
-    log("正在尝试连接对方...");
+    log("尝试连接: " + id);
+    conn = peer.connect(id, { reliable: true });
+    
+    // 超时检测
+    const timeout = setTimeout(() => {
+        if (!conn.open) {
+            log("❌ 连接超时，请确保对方在线并检查网络");
+            alert("连接失败，请检查对方ID是否正确，或尝试切换网络（WiFi换流量）");
+        }
+    }, 10000);
+
     setupConn();
 }
 
 function setupConn() {
     conn.on('open', () => {
-        log("✅ 连接成功！");
+        log("✅ 联机成功！");
         document.getElementById('setupArea').style.display = 'none';
         document.getElementById('gameArea').style.display = 'block';
-        document.getElementById('roleDisplay').innerText = "已连通";
         render();
     });
-
-    conn.on('data', (data) => {
-        log(`收到数据: ${data.type}`);
-        handleData(data);
-    });
+    conn.on('data', data => handleData(data));
+    conn.on('close', () => { alert("连接断开"); location.reload(); });
 }
 
-// 4. 发牌逻辑
+// 核心逻辑保持不变...
 function dealCards() {
-    log("开始洗牌...");
     const shuffled = [...ALL_CARDS].sort(() => Math.random() - 0.5);
-    const p1 = shuffled.slice(0, 18);
-    const p2 = shuffled.slice(18);
-    const first = Math.random() > 0.5;
-
-    // 自己作为发牌方默认是 P1
-    myHand = p1;
-    isMyTurn = first;
+    myHand = shuffled.slice(0, 18);
+    isMyTurn = Math.random() > 0.5;
     onTable = [];
-    
-    // 通知对方
-    conn.send({ type: 'INIT', hand: p2, turn: !first });
+    conn.send({ type: 'INIT', hand: shuffled.slice(18), turn: !isMyTurn });
     render();
 }
 
 function handleData(data) {
-    if (data.type === 'INIT') {
-        myHand = data.hand;
-        isMyTurn = data.turn;
-        onTable = [];
-        log("牌已收到，游戏开始！");
-    } else if (data.type === 'PLAY') {
-        onTable = data.cards;
-        log("对方出牌了，请审核");
-    } else if (data.type === 'DECIDE') {
-        if (data.agreed) {
-            log("对方同意，出牌成功！");
-            myHand = myHand.filter(c => !onTable.includes(c));
-            onTable = [];
-            isMyTurn = false; // 轮到对方
-        } else {
-            log("对方驳回，牌回手中！");
-            onTable = [];
-            isMyTurn = true; // 还是我的回合
-        }
+    if (data.type === 'INIT') { myHand = data.hand; isMyTurn = data.turn; onTable = []; log("游戏开始！"); }
+    else if (data.type === 'PLAY') { onTable = data.cards; log("对方出牌了"); }
+    else if (data.type === 'DECIDE') {
+        if (data.agreed) { myHand = myHand.filter(c => !onTable.includes(c)); onTable = []; isMyTurn = false; }
+        else { onTable = []; isMyTurn = true; }
     }
     render();
 }
 
 function render() {
-    // 渲染手牌
-    const container = document.getElementById('handContainer');
-    container.innerHTML = "";
+    const container = document.getElementById('handContainer'); container.innerHTML = "";
     myHand.forEach(card => {
-        const d = document.createElement('div');
-        d.className = `card ${selected.includes(card) ? 'selected' : ''}`;
+        const d = document.createElement('div'); d.className = `card ${selected.includes(card) ? 'selected' : ''}`;
         d.innerText = card;
-        d.onclick = () => {
-            if(!isMyTurn || onTable.length > 0) return;
-            if(selected.includes(card)) selected = selected.filter(c => c!==card);
-            else if(selected.length < 4) selected.push(card);
-            render();
-        };
+        d.onclick = () => { if(!isMyTurn || onTable.length > 0) return; if(selected.includes(card)) selected = selected.filter(c => c!==card); else if(selected.length < 4) selected.push(card); render(); };
         container.appendChild(d);
     });
-
-    // 桌面显示
     const table = document.getElementById('tableCards');
-    if (onTable.length > 0) {
-        table.innerHTML = `<span style="color:#666">正在出牌：</span><br>${onTable.join(" | ")}`;
-    } else {
-        table.innerText = isMyTurn ? "请选择1-4张牌出牌" : "等待对方出牌...";
-    }
-
-    // 按钮状态
+    table.innerHTML = onTable.length > 0 ? `当前出牌：<br><b>${onTable.join(" | ")}</b>` : (isMyTurn ? "轮到你出牌" : "等待对方...");
     document.getElementById('turnDisplay').innerText = isMyTurn ? "🔴 你的回合" : "⚪ 对方回合";
     document.getElementById('btnPlay').disabled = !isMyTurn || selected.length === 0 || onTable.length > 0;
     document.getElementById('btnCancel').disabled = selected.length === 0 || onTable.length > 0;
     document.getElementById('btnAgree').disabled = isMyTurn || onTable.length === 0;
     document.getElementById('btnReject').disabled = isMyTurn || onTable.length === 0;
+    if (myHand.length === 0 && ALL_CARDS.length > 0) table.innerText = "🏆 胜利！";
+}
 
-    if (myHand.length === 0 && ALL_CARDS.length > 0 && myHand !== null) {
-        log("🎉 恭喜你赢了！");
-        table.innerText = "🏆 你赢了！";
+function play() { onTable = [...selected]; conn.send({ type: 'PLAY', cards: onTable }); selected = []; render(); }
+function cancelSelect() { selected = []; render(); }
+function decide(agreed) { conn.send({ type: 'DECIDE', agreed }); onTable = []; isMyTurn = agreed; render(); }
+
+initPeer();
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SDFJ 嘴炮联机-稳定版</title>
+    <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        :root { --main-red: #d92a2a; --bg-pink: #fdf2f2; }
+        *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
+        body{ background: var(--bg-pink); font-family: system-ui, -apple-system; padding: 12px; padding-bottom: env(safe-area-inset-bottom); color:#333; }
+        .card-box{ background:white; padding:15px; border-radius:16px; box-shadow:0 4px 15px rgba(217,42,42,0.1); margin-bottom:12px; }
+        .title{ text-align:center; color: var(--main-red); margin-bottom: 10px; font-size:20px; }
+        .id-text{ font-size:13px; background:#f0f0f0; padding:12px; border-radius:8px; word-break:all; display:block; margin:8px 0; border: 1px dashed #ccc; color: blue; font-weight: bold; text-align: center; }
+        input{ padding:12px; border:1px solid #ddd; border-radius:10px; width:100%; margin-bottom:10px; font-size: 16px; }
+        .status-bar{ display:flex; justify-content:space-between; font-size:13px; font-weight:bold; color: var(--main-red); margin-bottom:10px; }
+        .desktop{ min-height:120px; border:2px dashed #ffb3b3; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:10px 0; background:#fff; padding:15px; }
+        .cards{ display:flex; flex-wrap:wrap; gap:8px; margin:15px 0; justify-content:center; }
+        .card{ padding:10px 12px; background:white; border:2px solid var(--main-red); border-radius:10px; cursor:pointer; font-size:14px; font-weight: 600; }
+        .card.selected{ background: var(--main-red); color:white; transform: translateY(-5px); }
+        .controls{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+        button{ padding:14px; border-radius:12px; border:none; background: var(--main-red); color:white; font-weight:bold; cursor:pointer; font-size: 15px; }
+        button:disabled{ background:#ddd; color: #999; }
+        .btn-full{ grid-column: span 2; }
+        .btn-start{ background:#28a745; }
+        #log{ font-size:11px; color:#888; margin-top:15px; background:rgba(255,255,255,0.7); padding:8px; border-radius:8px; height:60px; overflow-y:auto; }
+    </style>
+</head>
+<body>
+
+<h2 class="title">🎴 SDFJ 嘴炮联机</h2>
+
+<div class="card-box" id="setupArea">
+    <p style="font-size:13px; color:#666">1. 你的ID (点一下复制):</p>
+    <code class="id-text" id="myId" onclick="copyId()">获取中...</code>
+    <input type="text" id="peerIdInput" placeholder="在此粘贴朋友的ID">
+    <button class="btn-full" onclick="connectToPeer()">连接朋友</button>
+    <p style="font-size:11px; color:red; margin-top:8px; text-align:center">提示：连接不上请尝试切换流量/WiFi</p>
+</div>
+
+<div class="card-box" id="gameArea" style="display:none">
+    <div class="status-bar">
+        <span id="roleDisplay">● 已连接</span>
+        <span id="turnDisplay">等待发牌</span>
+    </div>
+    <div class="desktop" id="tableCards">等待发牌...</div>
+    <div class="controls">
+        <button id="btnStart" class="btn-full btn-start" onclick="dealCards()">🎲 洗牌并给双方发牌</button>
+        <button id="btnPlay" disabled onclick="play()">出牌</button>
+        <button id="btnCancel" disabled onclick="cancelSelect()">重选</button>
+        <button id="btnAgree" disabled onclick="decide(true)">同意(牌消失)</button>
+        <button id="btnReject" disabled onclick="decide(false)">驳回(拿回去)</button>
+    </div>
+</div>
+
+<div class="cards" id="handContainer"></div>
+<div id="log">系统日志：正在启动...</div>
+
+<script>
+const ALL_CARDS = ["王俊凯","王源","易烊千玺","马嘉祺","丁程鑫","宋亚轩","刘耀文","张真源","严浩翔","贺峻霖","朱志鑫","左航","张极","张泽禹","苏新皓","邓佳鑫","余宇涵","童禹坤","陈天润","张峻豪","穆祉丞","姚昱辰","黄朔","王浩","官俊臣","汪浚熙","陈铭泽","张桂源","李嘉森","傅子铭","杨博文","左奇","张函瑞","李运晨瑞","王橹骁","李飞","黄锐"];
+let peer, conn, myHand = [], selected = [], isMyTurn = false, onTable = [];
+
+function initPeer() {
+    // 强制使用公共 STUN 服务器，提高穿透成功率
+    peer = new Peer({
+        config: { 'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }, { 'urls': 'stun:stun1.l.google.com:19302' }] }
+    });
+    peer.on('open', id => { document.getElementById('myId').innerText = id; log("ID就绪，等待连接"); });
+    peer.on('connection', c => { conn = c; setupConn(); });
+    peer.on('error', err => { log("错误: " + err.type); alert("连接出错，请刷新重试"); });
+}
+
+function log(msg) {
+    const l = document.getElementById('log');
+    l.innerHTML += `<div>> ${msg}</div>`;
+    l.scrollTop = l.scrollHeight;
+}
+
+function copyId() {
+    const text = document.getElementById('myId').innerText;
+    if(text.includes("获取")) return;
+    navigator.clipboard.writeText(text).then(() => alert("ID已复制")).catch(() => {
+        const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el);
+        el.select(); document.execCommand('copy'); document.body.removeChild(el); alert("ID已复制");
+    });
+}
+
+function connectToPeer() {
+    const id = document.getElementById('peerIdInput').value.trim();
+    if(!id) return alert("请输入ID");
+    log("尝试连接: " + id);
+    conn = peer.connect(id, { reliable: true });
+    
+    // 超时检测
+    const timeout = setTimeout(() => {
+        if (!conn.open) {
+            log("❌ 连接超时，请确保对方在线并检查网络");
+            alert("连接失败，请检查对方ID是否正确，或尝试切换网络（WiFi换流量）");
+        }
+    }, 10000);
+
+    setupConn();
+}
+
+function setupConn() {
+    conn.on('open', () => {
+        log("✅ 联机成功！");
+        document.getElementById('setupArea').style.display = 'none';
+        document.getElementById('gameArea').style.display = 'block';
+        render();
+    });
+    conn.on('data', data => handleData(data));
+    conn.on('close', () => { alert("连接断开"); location.reload(); });
+}
+
+// 核心逻辑保持不变...
+function dealCards() {
+    const shuffled = [...ALL_CARDS].sort(() => Math.random() - 0.5);
+    myHand = shuffled.slice(0, 18);
+    isMyTurn = Math.random() > 0.5;
+    onTable = [];
+    conn.send({ type: 'INIT', hand: shuffled.slice(18), turn: !isMyTurn });
+    render();
+}
+
+function handleData(data) {
+    if (data.type === 'INIT') { myHand = data.hand; isMyTurn = data.turn; onTable = []; log("游戏开始！"); }
+    else if (data.type === 'PLAY') { onTable = data.cards; log("对方出牌了"); }
+    else if (data.type === 'DECIDE') {
+        if (data.agreed) { myHand = myHand.filter(c => !onTable.includes(c)); onTable = []; isMyTurn = false; }
+        else { onTable = []; isMyTurn = true; }
     }
-}
-
-function play() {
-    onTable = [...selected];
-    conn.send({ type: 'PLAY', cards: onTable });
-    selected = [];
     render();
 }
 
-function cancelSelect() {
-    selected = [];
-    render();
+function render() {
+    const container = document.getElementById('handContainer'); container.innerHTML = "";
+    myHand.forEach(card => {
+        const d = document.createElement('div'); d.className = `card ${selected.includes(card) ? 'selected' : ''}`;
+        d.innerText = card;
+        d.onclick = () => { if(!isMyTurn || onTable.length > 0) return; if(selected.includes(card)) selected = selected.filter(c => c!==card); else if(selected.length < 4) selected.push(card); render(); };
+        container.appendChild(d);
+    });
+    const table = document.getElementById('tableCards');
+    table.innerHTML = onTable.length > 0 ? `当前出牌：<br><b>${onTable.join(" | ")}</b>` : (isMyTurn ? "轮到你出牌" : "等待对方...");
+    document.getElementById('turnDisplay').innerText = isMyTurn ? "🔴 你的回合" : "⚪ 对方回合";
+    document.getElementById('btnPlay').disabled = !isMyTurn || selected.length === 0 || onTable.length > 0;
+    document.getElementById('btnCancel').disabled = selected.length === 0 || onTable.length > 0;
+    document.getElementById('btnAgree').disabled = isMyTurn || onTable.length === 0;
+    document.getElementById('btnReject').disabled = isMyTurn || onTable.length === 0;
+    if (myHand.length === 0 && ALL_CARDS.length > 0) table.innerText = "🏆 胜利！";
 }
 
-function decide(agreed) {
-    conn.send({ type: 'DECIDE', agreed: agreed });
-    if (agreed) {
-        onTable = [];
-        isMyTurn = true; // 我同意了，轮到我出
-    } else {
-        onTable = [];
-        isMyTurn = false; // 我驳回了，还是对方出
-    }
-    render();
-}
+function play() { onTable = [...selected]; conn.send({ type: 'PLAY', cards: onTable }); selected = []; render(); }
+function cancelSelect() { selected = []; render(); }
+function decide(agreed) { conn.send({ type: 'DECIDE', agreed }); onTable = []; isMyTurn = agreed; render(); }
+
+initPeer();
 </script>
 </body>
 </html>
